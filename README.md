@@ -10,4 +10,4 @@ Adobe AEM in a docker container
 - `docker-compose stop`
 
 ### Play
-- http://localhost:5050/ of http://localhost
+- http://localhost
