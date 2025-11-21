@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOM Ready Example</title>
+</head>
+<body>
+
+    <div id="content">
+      <h1>DOM Ready Example</h1>
+    </div>
+
+    <script type="module">
+      // Wait for the DOM to be fully loaded
+      document.addEventListener('DOMContentLoaded', () => {
+        // Lambda function wrapped inside DOMContentLoaded listener
+        const loadScriptConditionally = (src, loadAsync = true) => {
+          const script = document.createElement('script');
+          script.src = src;
+          if (loadAsync) {
+            script.async = true;
+          } else {
+            script.defer = true;
+          }
+          document.body.appendChild(script);
+        };
+
+        // Example usage: load the script with async
+        loadScriptConditionally('js_async.js', true);
+
+        // Example usage: load the script with defer
+        loadScriptConditionally('js_defer.js', false);
+      });
+    </script>
+
+</body>
+</html>
