@@ -3,9 +3,11 @@ Adobe AEM in a docker container
 
 ### Build
 - `cd ~/dev/repository/git/aem-docker/src/v1`
-- `docker-compose up -d`
+- `docker-compose build author publish`
 
 ### Run
+- `docker-compose up -d`
+- `docker-compose up -d author publish`
 - `docker-compose start`
 - `docker-compose stop`
 

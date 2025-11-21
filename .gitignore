@@ -13,3 +13,4 @@ build/*
 pom.xml.versionsBackup
 
 crx-quickstart
+logging
