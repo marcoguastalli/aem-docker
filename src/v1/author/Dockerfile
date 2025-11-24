@@ -16,8 +16,9 @@ ENV AEM_HOME=/opt/aem
 WORKDIR ${AEM_HOME}
 
 # Copy AEM Quickstart and license
-COPY aem-author-p4502.jar ${AEM_HOME}/aem-author-p4502.jar
 COPY license.properties ${AEM_HOME}/license.properties
+COPY aem-author-p4502.jar ${AEM_HOME}/aem-author-p4502.jar
+COPY aem-service-pkg-6.5.22.0.zip ${AEM_HOME}/crx-quickstart/install/
 
 # Copy your custom start script
 COPY run_author.sh ${AEM_HOME}/run_author.sh

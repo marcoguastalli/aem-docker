@@ -17,8 +17,9 @@ ENV AEM_HOME=/opt/aem
 WORKDIR ${AEM_HOME}
 
 # Copy AEM Quickstart and license
-COPY aem-publish-p4503.jar ${AEM_HOME}/aem-publish-p4503.jar
 COPY license.properties ${AEM_HOME}/license.properties
+COPY aem-publish-p4503.jar ${AEM_HOME}/aem-publish-p4503.jar
+COPY aem-service-pkg-6.5.22.0.zip ${AEM_HOME}/crx-quickstart/install/
 
 # Copy your custom start script
 COPY run_publish.sh ${AEM_HOME}/run_publish.sh
