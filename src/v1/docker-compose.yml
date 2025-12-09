@@ -9,8 +9,13 @@ services:
       - ./author/crx-quickstart:/opt/aem/crx-quickstart
       - ./logging/author-logs:/opt/aem/crx-quickstart/logs
     environment:
-      - AEM_RUNMODE=author,local
-      - ADMIN_PASSWORD=${AEM_PASSWORD}
+      AEM_RUNMODE: author,local
+      ADMIN_PASSWORD: ${AEM_PASSWORD:-admin}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4502/system/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
     restart: unless-stopped
     networks:
       - aem-network
@@ -25,25 +30,37 @@ services:
       - ./publish/crx-quickstart:/opt/aem/crx-quickstart
       - ./logging/publish-logs:/opt/aem/crx-quickstart/logs
     environment:
-      - AEM_RUNMODE=publish,local
-      - ADMIN_PASSWORD=${AEM_PASSWORD-admin}
+      AEM_RUNMODE: publish,local
+      ADMIN_PASSWORD: ${AEM_PASSWORD:-admin}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4503/system/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
     restart: unless-stopped
     networks:
       - aem-network
 
   dispatcher:
-    image: "aem-dispatcher:latest"
-    build:
-      context: ./dispatcher
+    image: adobe/aem-cs/dispatcher-publish:2.0.258
+    container_name: aem-dispatcher
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
-      - ./dispatcher/conf:/etc/httpd/conf
-    depends_on:
-      - publish
+      - ./dispatcher/src/conf.d:/etc/httpd/conf.d
+      - ./dispatcher/src/conf.dispatcher.d:/etc/httpd/conf.dispatcher.d
+      - dispatcher_cache:/mnt/var/www/html
+    environment:
+      AEM_HOST: host.docker.internal
+      AEM_PORT: 4503
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: unless-stopped
     networks:
       - aem-network
+
+volumes:
+  dispatcher_cache:
 
 networks:
   aem-network:
