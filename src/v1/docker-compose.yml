@@ -1,6 +1,7 @@
 services:
   author:
     image: "aem-author:latest"
+    container_name: aem-author
     build:
       context: ./author
     ports:
@@ -12,7 +13,7 @@ services:
       AEM_RUNMODE: author,local
       ADMIN_PASSWORD: ${AEM_PASSWORD:-admin}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4502/system/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:4502/crx/de/index.jsp" ]
       interval: 20s
       timeout: 10s
       retries: 10
@@ -22,6 +23,7 @@ services:
 
   publish:
     image: "aem-publish:latest"
+    container_name: aem-publish
     build:
       context: ./publish
     ports:
@@ -33,7 +35,7 @@ services:
       AEM_RUNMODE: publish,local
       ADMIN_PASSWORD: ${AEM_PASSWORD:-admin}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4503/system/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:4503/crx/de/index.jsp" ]
       interval: 20s
       timeout: 10s
       retries: 10
@@ -49,12 +51,13 @@ services:
     volumes:
       - ./dispatcher/src/conf.d:/etc/httpd/conf.d
       - ./dispatcher/src/conf.dispatcher.d:/etc/httpd/conf.dispatcher.d
+      - ./dispatcher/src/opt-in:/opt-in
       - dispatcher_cache:/mnt/var/www/html
     environment:
-      AEM_HOST: host.docker.internal
+      AEM_HOST: publish
       AEM_PORT: 4503
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    depends_on:
+      - publish  # Just wait for it to start, don't check health
     restart: unless-stopped
     networks:
       - aem-network

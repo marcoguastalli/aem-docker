@@ -8,8 +8,11 @@ Adobe AEM in a docker container
 ### Run
 - `docker-compose up -d`
 - `docker-compose up -d author publish`
+- `docker-compose up -d --force-recreate dispatcher`
+- `docker-compose restart dispatcher`
 - `docker-compose start`
 - `docker-compose stop`
 
 ### Play
-- http://localhost
+- http://localhost:8080
+- curl -I http://localhost:8080
