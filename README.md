@@ -12,6 +12,7 @@ Adobe AEM in a docker container
 - `docker-compose restart dispatcher`
 - `docker-compose start`
 - `docker-compose stop`
+- `docker-compose ps`
 
 ### Play
 - http://localhost:8080
