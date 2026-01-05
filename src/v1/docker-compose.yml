@@ -47,7 +47,7 @@ services:
     image: adobe/aem-cs/dispatcher-publish:2.0.258
     container_name: aem-dispatcher
     ports:
-      - "8080:80"
+      - "80:80"
     volumes:
       - ./dispatcher/src/conf.d:/etc/httpd/conf.d
       - ./dispatcher/src/conf.dispatcher.d:/etc/httpd/conf.dispatcher.d

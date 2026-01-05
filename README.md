@@ -15,5 +15,5 @@ Adobe AEM in a docker container
 - `docker-compose ps`
 
 ### Play
-- http://localhost:8080
-- curl -I http://localhost:8080
+- http://localhost
+- curl -I http://localhost
