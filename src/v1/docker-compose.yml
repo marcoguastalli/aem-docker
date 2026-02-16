@@ -1,0 +1,49 @@
+services:
+  author:
+    image: "aem-author:latest"
+    build:
+      context: ./author
+    ports:
+      - "4502:4502"
+    volumes:
+      - ./author/crx-quickstart:/opt/aem/crx-quickstart
+      - ./logging/author-logs:/opt/aem/crx-quickstart/logs
+    environment:
+      - AEM_RUNMODE=author,local
+      - ADMIN_PASSWORD=${AEM_PASSWORD}
+    restart: unless-stopped
+    networks:
+      - aem-network
+
+  publish:
+    image: "aem-publish:latest"
+    build:
+      context: ./publish
+    ports:
+      - "4503:4503"
+    volumes:
+      - ./publish/crx-quickstart:/opt/aem/crx-quickstart
+      - ./logging/publish-logs:/opt/aem/crx-quickstart/logs
+    environment:
+      - AEM_RUNMODE=publish,local
+      - ADMIN_PASSWORD=${AEM_PASSWORD-admin}
+    restart: unless-stopped
+    networks:
+      - aem-network
+
+  dispatcher:
+    image: "aem-dispatcher:latest"
+    build:
+      context: ./dispatcher
+    ports:
+      - "80:80"
+    volumes:
+      - ./dispatcher/conf:/etc/httpd/conf
+    depends_on:
+      - publish
+    restart: unless-stopped
+    networks:
+      - aem-network
+
+networks:
+  aem-network:
