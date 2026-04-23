@@ -9,8 +9,14 @@ services:
       - ./author/crx-quickstart:/opt/aem/crx-quickstart
       - ./logging/author-logs:/opt/aem/crx-quickstart/logs
     environment:
-      - AEM_RUNMODE=author,local
-      - ADMIN_PASSWORD=${AEM_PASSWORD}
+      AEM_RUNMODE: author,local
+      ADMIN_PASSWORD: ${AEM_PASSWORD:-admin}
+    healthcheck:
+      test: ["CMD", "sh", "-c", "curl -sf -u admin:${AEM_PASSWORD:-admin} http://localhost:4502/libs/granite/core/content/login.html | grep -q QUICKSTART_HOMEPAGE"]
+      interval: 20s
+      timeout: 10s
+      retries: 30
+      start_period: 60s
     restart: unless-stopped
     networks:
       - aem-network
@@ -25,8 +31,14 @@ services:
       - ./publish/crx-quickstart:/opt/aem/crx-quickstart
       - ./logging/publish-logs:/opt/aem/crx-quickstart/logs
     environment:
-      - AEM_RUNMODE=publish,local
-      - ADMIN_PASSWORD=${AEM_PASSWORD-admin}
+      AEM_RUNMODE: publish,local
+      ADMIN_PASSWORD: ${AEM_PASSWORD:-admin}
+    healthcheck:
+      test: ["CMD", "sh", "-c", "curl -sf -u admin:${AEM_PASSWORD:-admin} http://localhost:4503/libs/granite/core/content/login.html | grep -q QUICKSTART_HOMEPAGE"]
+      interval: 20s
+      timeout: 10s
+      retries: 30
+      start_period: 60s
     restart: unless-stopped
     networks:
       - aem-network
