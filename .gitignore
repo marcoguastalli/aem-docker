@@ -22,3 +22,6 @@ license.properties
 
 # Dispatcher runtime cache
 src/v1/dispatcher/cache/
+
+# Dispatcher config seeded from the Adobe SDK (Adobe-authored, not MIT)
+src/v1/dispatcher/src/

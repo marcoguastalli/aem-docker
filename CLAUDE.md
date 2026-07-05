@@ -10,9 +10,10 @@ Request flow: `https://localhost` (nginx, TLS termination) → `dispatcher` (AEM
 
 ## Required assets NOT in git (builds fail without them)
 
-- `src/aem-sdk-<version>/` — the AEM SDK download: quickstart JAR + dispatcher tools self-extractor. Extract the dispatcher tools in place (`./aem-sdk-dispatcher-tools-<v>-unix.sh` → `dispatcher-sdk-<v>/`), then load the docker image: `gunzip -c dispatcher-sdk-<v>/lib/dispatcher-publish-arm64.tar.gz | docker load`
+- The AEM SDK (quickstart JAR + dispatcher tools self-extractor) — lives outside this repo; on this machine it is in the `vorwerk-sales/aem-servers-docker` checkout under `src/aem-sdk-<version>/`. Extract the dispatcher tools in place (`./aem-sdk-dispatcher-tools-<v>-unix.sh` → `dispatcher-sdk-<v>/`), then load the docker image: `gunzip -c dispatcher-sdk-<v>/lib/dispatcher-publish-arm64.tar.gz | docker load`
 - `src/v1/author/` — `aem-author-p4502.jar` + `license.properties` (quickstart JAR renamed)
 - `src/v1/publish/` — `aem-publish-p4503.jar` + `license.properties`
+- `src/v1/dispatcher/src/` — dispatcher config, seeded from the SDK defaults (Adobe-authored, so untracked in this MIT repo): `cp -R <sdk-dir>/dispatcher-sdk-<v>/src src/v1/dispatcher/src`
 
 `src/v1/.env` pins two things: `DISPATCHER_SDK` (relative path to the extracted SDK — compose mounts its `lib/` into the dispatcher container) and `DISPATCHER_IMAGE` (the loaded image tag). Bumping the SDK version means updating `.env` and re-loading the image.
 
@@ -43,4 +44,3 @@ cd src/v1/dispatcher && <sdk-dir>/dispatcher-sdk-<v>/bin/validate.sh src
 - **Author and Publish** images are near-identical (eclipse-temurin:11-jdk); each entrypoint (`run_author.sh` / `run_publish.sh`) combines `DEBUG_OPTS` + `JVM_OPTS` into `CQ_JVM_OPTS` and launches the quickstart JAR with runmodes `author|publish,localdev,dynamicmedia_scene7,nosamplecontent`. Keep both sides in sync when changing one.
 - JPDA remote debugging: port 8502 (author) / 8503 (publish) — exposed in the images but not mapped in compose; add mappings to use them.
 - Runmode mismatch: compose sets `AEM_RUNMODE` but the entrypoint scripts hardcode `-r ...` and ignore it — the env var currently has no effect.
-- `src/v1/dispatcher/Dockerfile` is the old hand-rolled httpd:2.4 dispatcher, superseded by the SDK image and no longer referenced by compose.
