@@ -43,16 +43,44 @@ services:
     networks:
       - aem-network
 
+  # AEM SDK dispatcher image, run in "flexible mode" the same way the SDK's
+  # bin/docker_run.sh does: config sources mounted at /mnt/dev/src, SDK lib
+  # scripts mounted into the entrypoint. Load the image once with:
+  #   gunzip -c $DISPATCHER_SDK/lib/dispatcher-publish-arm64.tar.gz | docker load
+  # The entrypoint waits for AEM_HOST:AEM_PORT itself, so no depends_on here —
+  # the dispatcher can start before (or without) publish.
   dispatcher:
-    image: "aem-dispatcher:latest"
-    build:
-      context: ./dispatcher
+    image: "${DISPATCHER_IMAGE}"
+    ports:
+      - "8080:80"
+    volumes:
+      - ./dispatcher/src:/mnt/dev/src:ro
+      - ./dispatcher/cache:/mnt/var/www
+      - ${DISPATCHER_SDK}/lib:/usr/lib/dispatcher-sdk:ro
+      - ${DISPATCHER_SDK}/lib/import_sdk_config.sh:/docker_entrypoint.d/zzz-import-sdk-config.sh:ro
+      - ${DISPATCHER_SDK}/lib/dummy_gitinit_metadata.sh:/docker_entrypoint.d/zzz-overwrite_gitinit_metadata.sh:ro
+    environment:
+      AEM_HOST: publish
+      AEM_PORT: 4503
+      ENVIRONMENT_TYPE: ${DISP_RUN_MODE:-dev}
+      DISP_LOG_LEVEL: ${DISP_LOG_LEVEL:-warn}
+      REWRITE_LOG_LEVEL: ${REWRITE_LOG_LEVEL:-warn}
+      ENABLE_MANAGED_REWRITE_MAPS_FLAG: "true"
+    restart: unless-stopped
+    networks:
+      - aem-network
+
+  # HTTPS termination in front of the HTTP-only dispatcher.
+  nginx:
+    image: "nginx:stable-alpine-slim"
     ports:
       - "80:80"
+      - "443:443"
     volumes:
-      - ./dispatcher/conf:/etc/httpd/conf
+      - ./nginx/conf/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
     depends_on:
-      - publish
+      - dispatcher
     restart: unless-stopped
     networks:
       - aem-network

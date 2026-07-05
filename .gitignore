@@ -14,3 +14,11 @@ pom.xml.versionsBackup
 
 crx-quickstart
 logging
+
+# AEM SDK binaries (licensed, huge) — keep out of git
+src/aem-sdk-*/
+*.jar
+license.properties
+
+# Dispatcher runtime cache
+src/v1/dispatcher/cache/
