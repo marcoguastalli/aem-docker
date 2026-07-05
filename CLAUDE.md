@@ -8,8 +8,6 @@ Docker setup for running Adobe AEM locally, mimicking the AEMaaCS delivery chain
 
 Request flow: `https://localhost` (nginx, TLS termination) → `dispatcher` (AEM SDK dispatcher-publish image, HTTP) → `publish` :4503; `author` :4502 stands alone. All defined in `src/v1/docker-compose.yml`.
 
-`src/nginx/src/v19/` is an older standalone nginx HTTPS experiment (static HTML demo), unrelated to the v1 stack. The v1 nginx layer (`src/v1/nginx/`) supersedes it.
-
 ## Required assets NOT in git (builds fail without them)
 
 - `src/aem-sdk-<version>/` — the AEM SDK download: quickstart JAR + dispatcher tools self-extractor. Extract the dispatcher tools in place (`./aem-sdk-dispatcher-tools-<v>-unix.sh` → `dispatcher-sdk-<v>/`), then load the docker image: `gunzip -c dispatcher-sdk-<v>/lib/dispatcher-publish-arm64.tar.gz | docker load`
